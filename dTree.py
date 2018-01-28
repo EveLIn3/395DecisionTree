@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.io as sio
 import tree_plotter
+import random
 
 
 class Tree:
@@ -151,10 +152,71 @@ def testTrees(trees, test_sample):
     return predicted_label
 
 
-Example = np.array(
-    [[1, 0], [1, 1], [1, 0], [1, 0], [0, 0], [0, 1], [0, 1], [1, 0], [0, 0], [0, 0], [0, 1], [1, 1], [0, 0], [1, 1]])
-Atr = np.array([0, 1])
-binary = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
+def testTrees_random(trees, test_sample):
+    predicted_label = 0
+    num_of_classes = len(trees)
+    predictions_depth_dict = {}
+    for i in range(num_of_classes):
+        root = trees[i]
+        depth = 0
+        while len(root.kids) > 0:
+            action_unit_index = root.op
+            depth += 1
+            if test_sample[action_unit_index] == 1:
+                root = root.kids[0]  # left kid
+            else:
+                root = root.kids[1]  # right kid
+
+        predicted_class = root.label
+        if predicted_class == 1:
+            predictions_depth_dict[i + 1] = depth
+            predicted_label = i + 1
+
+    if predicted_label == 0:
+        return np.random.randint(6, size=1)[0]
+    elif len(predictions_depth_dict) == 1:
+        return predicted_label
+    else:
+        return random.choice(list(predictions_depth_dict.keys()))
+
+
+def testTrees_depth_determined(trees, test_sample):
+    predicted_label = 0
+    num_of_classes = len(trees)
+    predictions_depth_dict = {}
+    final_depth_dict = {}
+    for i in range(num_of_classes):
+        root = trees[i]
+        depth = 0
+        while len(root.kids) > 0:
+            action_unit_index = root.op
+            depth += 1
+            if test_sample[action_unit_index] == 1:
+                root = root.kids[0]  # left kid
+            else:
+                root = root.kids[1]  # right kid
+
+        predicted_class = root.label
+        final_depth_dict[i+1] = depth
+        if predicted_class == 1:
+            predictions_depth_dict[i + 1] = depth
+            predicted_label = i + 1
+
+    if predicted_label == 0:
+        shallowest_label = max(final_depth_dict, key=final_depth_dict.get)
+        return shallowest_label
+        # return np.random.randint(6, size=1)[0]
+    elif len(predictions_depth_dict) == 1:
+        return predicted_label
+    else:
+        shallowest_predict_label = min(predictions_depth_dict, key=predictions_depth_dict.get)
+        return shallowest_predict_label
+
+
+# Example = np.array([[1, 0], [1, 1], [1, 0], [1, 0], [0, 0], [0, 1], [0, 1],
+#                     [1, 0], [0, 0], [0, 0], [0, 1], [1, 1], [0, 0], [1, 1]])
+# Atr = np.array([0, 1])
+# binary = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
 # k = choose_best_decision_attribute(Example, Atr, binary)
 # print("k is ", k)
 
