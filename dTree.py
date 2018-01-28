@@ -27,8 +27,8 @@ def choose_best_decision_attribute(example, attributes, binary_target):
     N = example.shape[0]
 
     postiveN = np.sum(binary_target)
-    #	print('N ', N)
-    #	print('postiveN ', postiveN)
+    # print('N ', N)
+    # print('postiveN ', postiveN)
     propor = 1.0 * postiveN / N
     entropyE = -1 * ((propor) * np.log2(propor) + (1 - propor) * np.log2(1 - propor))
 
@@ -36,8 +36,8 @@ def choose_best_decision_attribute(example, attributes, binary_target):
     for attri in attributes:
         exampleA = example[:, attri]  # column with attribute = attri
         posAttr = np.sum(exampleA)
-        #		print("--------------")
-        #		print(np.shape(exampleA))
+        # print("--------------")
+        # print(np.shape(exampleA))
         atrP = 1.0 * posAttr / N
 
         aPos = 0
@@ -145,10 +145,11 @@ def testTrees(trees, test_sample):
         if predicted_class == 1:
             predicted_label = i + 1
             break
-        elif i == num_of_classes-2:
+        elif i == num_of_classes - 2:
             predicted_label = i + 2
 
     return predicted_label
+
 
 Example = np.array(
     [[1, 0], [1, 1], [1, 0], [1, 0], [0, 0], [0, 1], [0, 1], [1, 0], [0, 0], [0, 0], [0, 1], [1, 1], [0, 0], [1, 1]])
@@ -167,10 +168,10 @@ for i in range(1, 7):
         attributes.add(a)
 
     binary_labels = (labels == i).astype(int)
-    #	print("=====================Labels Length {}".format(np.shape(binary_labels)))
-    #	print(np.sum(binary_labels))
+    # print("=====================Labels Length {}".format(np.shape(binary_labels)))
+    # print(np.sum(binary_labels))
     trained_tree = decision_tree_learning(features, attributes, binary_labels)
-    print("==============================================")
+    print("======================================================================")
     print("Decision tree for label No.{}".format(i))
     tree_plotter.print_tree(trained_tree, childattr='kids', nameattr='op')
-    print("==============================================")
+    print("======================================================================")
