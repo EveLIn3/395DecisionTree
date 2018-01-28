@@ -3,6 +3,8 @@ import scipy.io as sio
 import tree_plotter
 import random
 
+# hyper-parameters
+small_enough_entropy = 0.5
 
 class Tree:
     def __init__(self, op, kids, label):
@@ -32,6 +34,9 @@ def choose_best_decision_attribute(example, attributes, binary_target):
     # print('postiveN ', postiveN)
     propor = 1.0 * postiveN / N
     entropyE = -1 * ((propor) * np.log2(propor) + (1 - propor) * np.log2(1 - propor))
+
+    if entropyE < small_enough_entropy:  # pruning tree node
+        return -1
 
     prev_info = 0
     for attri in attributes:
@@ -104,6 +109,8 @@ def decision_tree_learning(examples, attributes, binary_targets):
         return Tree(None, [], majority_value(binary_targets))
     else:
         best_attribute = choose_best_decision_attribute(examples, attributes, binary_targets)
+        if best_attribute < 0:
+            return Tree(None, [], majority_value(binary_targets))
         # print("Best Attr: {}".format(best_attribute))
         attribute_values = examples[:, best_attribute]
 
