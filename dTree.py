@@ -223,6 +223,7 @@ def testTrees_depth_determined(trees, test_sample):
 data = sio.loadmat('cleandata_students.mat')
 features = data['x']
 labels = data['y']
+print("Visualizing Trees with all training examples...")
 
 for i in range(1, 7):
     attributes = set()
