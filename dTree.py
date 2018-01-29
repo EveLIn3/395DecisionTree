@@ -3,8 +3,10 @@ import scipy.io as sio
 import tree_plotter
 import random
 
-# hyper-parameters
+# hyper-parameters  0.5 & 1 delivers 0.744
 small_enough_entropy = 0.5
+min_sample_per_node = 1
+
 
 class Tree:
     def __init__(self, op, kids, label):
@@ -25,7 +27,6 @@ def majority_value(binary_targets):
 
 def choose_best_decision_attribute(example, attributes, binary_target):
     # information gain = p * log p
-    previous = 0
     attribute = 0
     N = example.shape[0]
 
@@ -46,7 +47,7 @@ def choose_best_decision_attribute(example, attributes, binary_target):
         # print(np.shape(exampleA))
         atrP = 1.0 * posAttr / N
 
-        aPos = 0
+        # aPos = 0
         aNeg = 0
         # need to calculate entropy for each Sv
         value_one_target = binary_target[exampleA == 1]
@@ -87,7 +88,7 @@ def choose_best_decision_attribute(example, attributes, binary_target):
                     aNeg = -1.0 * (p3 * np.log2(p3) + p4 * np.log2(p4))
 
         infoG = entropyE - atrP * aPos - (1.0 - atrP) * aNeg
-        if (prev_info < infoG):
+        if prev_info < infoG:
             prev_info = infoG
             attribute = attri
 
@@ -124,8 +125,13 @@ def decision_tree_learning(examples, attributes, binary_targets):
         attr_postive_label = binary_targets[attr_postive_index]
         attr_negative_label = binary_targets[attr_negative_index]
 
-        if np.shape(attr_postive_examples)[0] == 0 or np.shape(attr_negative_examples)[0] == 0:
+        num_attr_1_examples = np.shape(attr_postive_examples)[0]
+        num_attr_0_examples = np.shape(attr_negative_examples)[0]
+
+        if num_attr_1_examples < min_sample_per_node or num_attr_0_examples < min_sample_per_node:
             return Tree(None, [], majority_value(binary_targets))
+        # if np.shape(attr_postive_examples)[0] == 0 or np.shape(attr_negative_examples)[0] == 0:
+        #     return Tree(None, [], majority_value(binary_targets))
         else:
             tree = Tree(best_attribute, [], None)
             attributes.remove(best_attribute)
