@@ -3,8 +3,8 @@ import scipy.io as sio
 import tree_plotter
 import random
 
-# hyper-parameters  0.5 & 1 delivers 0.744
-small_enough_entropy = 0.5
+# hyper-parameters    0.5 & 1 delivers 0.744
+small_enough_entropy = 0.4
 min_sample_per_node = 1
 
 
@@ -105,7 +105,7 @@ def decision_tree_learning(examples, attributes, binary_targets):
         # print('Leaf with 1')
         return Tree(None, [], 1)
     elif len(attributes) == 0:
-        #	elif attributes == None:
+        # elif attributes == None:
         # print('Leaf with majority')
         return Tree(None, [], majority_value(binary_targets))
     else:
@@ -135,8 +135,9 @@ def decision_tree_learning(examples, attributes, binary_targets):
         else:
             tree = Tree(best_attribute, [], None)
             attributes.remove(best_attribute)
-            left_kid = decision_tree_learning(attr_postive_examples, attributes, attr_postive_label)
-            right_kid = decision_tree_learning(attr_negative_examples, attributes, attr_negative_label)
+            attributes_copy = attributes.copy()  # use copy of set, so one attribute may be used at two sub-trees
+            left_kid = decision_tree_learning(attr_postive_examples, attributes_copy, attr_postive_label)
+            right_kid = decision_tree_learning(attr_negative_examples, attributes_copy, attr_negative_label)
             tree.kids = [left_kid, right_kid]
             return tree
 
@@ -244,8 +245,6 @@ for i in range(1, 7):
         attributes.add(a)
 
     binary_labels = (labels == i).astype(int)
-    # print("=====================Labels Length {}".format(np.shape(binary_labels)))
-    # print(np.sum(binary_labels))
     trained_tree = decision_tree_learning(features, attributes, binary_labels)
     print("======================================================================")
     print("Decision tree for label No.{}".format(i))
