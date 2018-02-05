@@ -99,14 +99,10 @@ def decision_tree_learning(examples, attributes, binary_targets):
     num_examples = np.shape(examples)[0]
     sum_labels = np.sum(binary_targets)
     if sum_labels == 0:
-        # print('Leaf with 0')
         return Tree(None, [], 0)
     elif sum_labels == num_examples:
-        # print('Leaf with 1')
         return Tree(None, [], 1)
     elif len(attributes) == 0:
-        # elif attributes == None:
-        # print('Leaf with majority')
         return Tree(None, [], majority_value(binary_targets))
     else:
         best_attribute = choose_best_decision_attribute(examples, attributes, binary_targets)
