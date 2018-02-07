@@ -3,16 +3,19 @@ import scipy.io as sio
 import tree_plotter
 import random
 
-# hyper-parameters    0.5 & 1 delivers 0.744
+# hyper-parameters    0.4 & 1 delivers 0.75
 small_enough_entropy = 0.4
 min_sample_per_node = 1
 
 
 class Tree:
+    _id = 0  # for plotting purposes, to identify each node
     def __init__(self, op, kids, label):
         self.op = op
         self.kids = kids
         self.label = label
+        self.id = Tree._id
+        Tree._id += 1  # for plotting purposes, to identify each node
 
 
 def majority_value(binary_targets):
@@ -134,6 +137,8 @@ def decision_tree_learning(examples, attributes, binary_targets):
             attributes_copy = attributes.copy()  # use copy of set, so one attribute may be used at two sub-trees
             left_kid = decision_tree_learning(attr_postive_examples, attributes_copy, attr_postive_label)
             right_kid = decision_tree_learning(attr_negative_examples, attributes_copy, attr_negative_label)
+            if left_kid.label == right_kid.label and left_kid.label is not None and right_kid.label is not None:
+                return Tree(None, [], left_kid.label)
             tree.kids = [left_kid, right_kid]
             return tree
 
@@ -223,17 +228,35 @@ def testTrees_depth_determined(trees, test_sample):
         return shallowest_predict_label
 
 
-# Example = np.array([[1, 0], [1, 1], [1, 0], [1, 0], [0, 0], [0, 1], [0, 1],
-#                     [1, 0], [0, 0], [0, 0], [0, 1], [1, 1], [0, 0], [1, 1]])
-# Atr = np.array([0, 1])
-# binary = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
-# k = choose_best_decision_attribute(Example, Atr, binary)
-# print("k is ", k)
+def read_tree(trained_tree):
+    if trained_tree.op == None:
+        return
+    else:
+        for i in range(2):
+            if trained_tree.kids[i].op != None:
+                output_dot_str_list.append('{}[label = "{}"];\n'.format(trained_tree.id,trained_tree.op))
+                output_dot_str_list.append('{}[label = "{}"];\n'.format(trained_tree.kids[i].id,trained_tree.kids[i].op))
+                output_dot_str_list.append("{}->{}\n".format(trained_tree.id, trained_tree.kids[i].id))
+                # print('{}[label = "{}"];'.format(trained_tree.id,trained_tree.op))
+                # print('{}[label = "{}"];'.format(trained_tree.kids[i].id,trained_tree.kids[i].op))
+                # print("{}->{}".format(trained_tree.id, trained_tree.kids[i].id))
+                read_tree(trained_tree.kids[i])
+            else:
+                # print('{}[label = "{}"];'.format(trained_tree.id, trained_tree.op))
+                # print('{}[label = "{}",color=lightblue,style=filled];'.format(trained_tree.kids[i].id,
+                #                                                                   trained_tree.kids[i].label))
+                # print("{}->{}".format(trained_tree.id, trained_tree.kids[i].id))
+                output_dot_str_list.append('{}[label = "{}"];\n'.format(trained_tree.id, trained_tree.op))
+                output_dot_str_list.append('{}[label = "{}",color=lightblue,style=filled];\n'.format(trained_tree.kids[i].id,
+                                                                                  trained_tree.kids[i].label))
+                output_dot_str_list.append("{}->{}\n".format(trained_tree.id, trained_tree.kids[i].id))
+
 
 data = sio.loadmat('cleandata_students.mat')
 features = data['x']
 labels = data['y']
 print("Visualizing Trees with all training examples...")
+output_dot_str_list = []
 
 for i in range(1, 7):
     attributes = set()
@@ -243,6 +266,14 @@ for i in range(1, 7):
     binary_labels = (labels == i).astype(int)
     trained_tree = decision_tree_learning(features, attributes, binary_labels)
     print("======================================================================")
+    output_dot_str_list.append("Decision tree for label No.{} \n".format(i))
     print("Decision tree for label No.{}".format(i))
+
     tree_plotter.print_tree(trained_tree, childattr='kids', nameattr='op')
+    read_tree(trained_tree)
+
+    output_dot_str_list.append("===============================================\n")
     print("======================================================================")
+
+with open('dot_formatted_trees.txt', 'w') as output_file:
+    output_file.writelines(output_dot_str_list)

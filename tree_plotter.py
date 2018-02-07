@@ -1,5 +1,5 @@
 """
-Clement Michard (c) 2015
+Author: Clement Michard (c) 2015
 Reference: https://github.com/clemtoy/pptree
 """
 
