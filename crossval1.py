@@ -8,7 +8,6 @@ Created on Thu Jan 25 15:45:27 2018
 import scipy.io
 import numpy as np
 import dTree
-# from sklearn.model_selection import KFold
 
 mat = scipy.io.loadmat('cleandata_students.mat')
 
@@ -98,6 +97,7 @@ def k_th_cross_validation(examples, labels, kfold=10):
     num_each_fold = int(num_examples / kfold)
     accuracy_list = []
     confusion_matrix_total = np.zeros((6,6))
+    print("Running cross validation...")
     for k in range(kfold):
         X_test = examples[k*num_each_fold:(k+1)*num_each_fold, :]
         X_train = np.delete(examples, np.s_[k*num_each_fold:(k+1)*num_each_fold], axis=0)
@@ -117,13 +117,13 @@ def k_th_cross_validation(examples, labels, kfold=10):
             trained_trees_list.append(trained_tree)
 
         X_test_list = X_test.tolist()
-        Y_predict_list = [dTree.testTrees(trained_trees_list, x) for x in X_test_list]
+        Y_predict_list = [dTree.testTrees_depth_determined(trained_trees_list, x) for x in X_test_list]
         Y_predict = np.reshape(np.array(Y_predict_list), (len(Y_predict_list), 1))
         
         # confusion_matrix1 = np.zeros((6,6))
         
         correct_prediction = np.sum(Y_test == Y_predict)
-        # print(Y_predict_list)
+        print("Fold {}".format(k+1))
         # print(correct_prediction)
         accuracy = correct_prediction / num_each_fold
         accuracy_list.append(accuracy)
@@ -136,17 +136,12 @@ def k_th_cross_validation(examples, labels, kfold=10):
     ave_precision_rate = precision_rate(confusion_matrix_total)
     ave_f1_value = F_1(ave_recall_rate,ave_precision_rate)
 
-    # print(accuracy_list)
+    print()
     print("Confusion Matrix:")
     print(confusion_matrix_total)
+    print("{} Fold Cross Validation Avg Accuracy: {:.4f}".format(kfold, sum(accuracy_list) / kfold))
 
-    print("{} Fold Cross Validation Avg Accuracy: {}".format(kfold, sum(accuracy_list) / kfold))
-
-    # for label in range(6):
-    #     print("=== Emotion No.{}".format(label+1))
-    #     print("=== Precision : {}".format(ave_precision_rate[0][label]))
-    #     print("=== Recall : {}".format(ave_recall_rate[0][label]))
-    #     print("=== F-1 : {}".format(ave_f1_value[0][label]))
+    print()
     print("Emotion           1           2           3           4           5           6")
     print("Precision: {}".format(ave_precision_rate[0]))
     print("Recall:    {}".format(ave_recall_rate[0]))
