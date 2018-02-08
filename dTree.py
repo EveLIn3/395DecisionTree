@@ -2,6 +2,7 @@ import numpy as np
 import scipy.io as sio
 import tree_plotter
 import random
+import pickle
 
 # hyper-parameters    0.4 & 1 delivers 0.75
 small_enough_entropy = 0.4
@@ -251,29 +252,39 @@ def read_tree(trained_tree):
                                                                                   trained_tree.kids[i].label))
                 output_dot_str_list.append("{}->{}\n".format(trained_tree.id, trained_tree.kids[i].id))
 
-
-data = sio.loadmat('cleandata_students.mat')
-features = data['x']
-labels = data['y']
-print("Visualizing Trees with all training examples...")
 output_dot_str_list = []
+trained_trees_list = []
 
-for i in range(1, 7):
-    attributes = set()
-    for a in range(45):
-        attributes.add(a)
+if __name__ == '__main__':
+    data = sio.loadmat('cleandata_students.mat')
+    features = data['x']
+    labels = data['y']
+    print("Visualizing Trees with all training examples...")
+    for i in range(1, 7):
+        attributes = set()
+        for a in range(45):
+            attributes.add(a)
 
-    binary_labels = (labels == i).astype(int)
-    trained_tree = decision_tree_learning(features, attributes, binary_labels)
-    print("======================================================================")
-    output_dot_str_list.append("Decision tree for label No.{} \n".format(i))
-    print("Decision tree for label No.{}".format(i))
+        binary_labels = (labels == i).astype(int)
+        trained_tree = decision_tree_learning(features, attributes, binary_labels)
+        trained_trees_list.append(trained_tree)
+        print("======================================================================")
+        output_dot_str_list.append("Decision tree for label No.{} \n".format(i))
+        print("Decision tree for label No.{}".format(i))
 
-    tree_plotter.print_tree(trained_tree, childattr='kids', nameattr='op')
-    read_tree(trained_tree)
+        tree_plotter.print_tree(trained_tree, childattr='kids', nameattr='op')
+        read_tree(trained_tree)
 
-    output_dot_str_list.append("===============================================\n")
-    print("======================================================================")
+        output_dot_str_list.append("===============================================\n")
+        print("======================================================================")
 
-with open('dot_formatted_trees.txt', 'w') as output_file:
-    output_file.writelines(output_dot_str_list)
+    print("Please scroll up to check the quick visualization.")
+    print("For full graphical visualization, please check the \'Instructions.txt\'.")
+
+    with open('dot_formatted_trees.txt', 'w') as output_file:
+        output_file.writelines(output_dot_str_list)
+
+    with open('saved_trees.pkl', 'wb') as output_tree_file:
+        print(len(trained_trees_list))
+        pickle.dump(trained_trees_list, output_tree_file)
+        print("Tree saved.")
