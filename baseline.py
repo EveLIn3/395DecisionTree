@@ -1,6 +1,8 @@
 """
 @author: rin
+Just to compare the performance to standard decision trees.
 """
+
 import scipy.io as sio
 from sklearn import tree
 from sklearn.model_selection import KFold
