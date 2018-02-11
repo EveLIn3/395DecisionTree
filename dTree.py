@@ -285,6 +285,5 @@ if __name__ == '__main__':
         output_file.writelines(output_dot_str_list)
 
     with open('saved_trees.pkl', 'wb') as output_tree_file:
-        print(len(trained_trees_list))
         pickle.dump(trained_trees_list, output_tree_file)
-        print("Tree saved.")
+        print("Trees saved into \'saved_trees.pkl\' file.")

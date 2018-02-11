@@ -1,10 +1,26 @@
-The main program is:
+> The main testing program is:
+
+‘run_this.py’
+
+where you can test our saved trees with your data.(you just need to modify the file path)
+There will be some ‘minimal’ tree visualization as well ^ ^.
+
+————————————————————————————————————————————
+> The 10-th fold cross_validation script is:
 
 ‘crossval1.py’
 
-which contains the 10-th fold cross validation, plotting in the console(tree visualizing), as well as an ‘output_dot_formatted.txt’ file (this is to another way to better visualize the tree).
+which contains the 10-th fold cross validation, confusion matrix
+
+————————————————————————————————————————————
+> The tree visualizing scripts is:
+
+‘dTree.py’
+
+There will be plotting in the console(tree visualizing), as well as an ‘output_dot_formatted.txt’ file (this is to another way to better visualize the tree).
 
 There will be quite a lot of information printed in the console, so please scroll there and have a look ^ ^.
+————————————————————————————————————————————
 
 The ‘output_dot_formatted.txt’ file is used for webGraphviz plotting purposes, in order to see the plot, please:
 1. Go to http://www.webgraphviz.com
