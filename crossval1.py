@@ -9,7 +9,7 @@ import scipy.io
 import numpy as np
 import dTree
 
-mat = scipy.io.loadmat('cleandata_students.mat')
+mat = scipy.io.loadmat('noisydata_students.mat')
 
 example_clean = mat['x']
 label_clean = mat['y']
@@ -140,6 +140,7 @@ def k_th_cross_validation(examples, labels, kfold=10):
     print("Confusion Matrix:")
     print(confusion_matrix_total)
     print("{} Fold Cross Validation Avg Accuracy: {:.4f}".format(kfold, sum(accuracy_list) / kfold))
+    print("Variance: {:.5f}".format(np.var(accuracy_list)))
 
     print()
     print("Emotion           1           2           3           4           5           6")
